@@ -1,5 +1,4 @@
 
-
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -208,40 +207,73 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 
 	}
 
+	public boolean checkValidationForVechicleAndSpeedAndMaxweight(int noOfVehicle, int maxSpd,
+			int maxCarriableWt) {
+		Validations validations = new Validations();
+		return validations.checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicle, maxSpd, maxCarriableWt);
+	}
+
+	public boolean checkValidationForBaseDeliveryCostAndPackageCount(int baseDelCost, int packageCount) {
+		Validations validations = new Validations();
+		return validations.checkValidationForBaseDeliveryCostAndPackageCount(baseDelCost, packageCount);
+
+	}
+
 	public static void main(String[] args) {
 		int baseDeliveryCost, noOfPackages;
+		
+		DeliveryTimeEstimation delTimeEst = new DeliveryTimeEstimation();
+
 		// taking the inputs
 		InputOutputDetails inputOutputDetails = new InputOutputDetails();
 		List<Packages> inputPackages = inputOutputDetails.getInputDetails();
 		baseDeliveryCost = inputOutputDetails.baseDeliveryCost;
 		noOfPackages = inputOutputDetails.noOfPackages;
+		boolean validationFlag = delTimeEst.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost,
+				baseDeliveryCost);
+		if (!validationFlag) {
+			System.out.println("Invalid DeliveryCost,noof packages details     .. Enter valid details....!");
+		} else {
 
-		DeliveryTimeEstimation delTimeEst = new DeliveryTimeEstimation(baseDeliveryCost, noOfPackages);
-		// Taking inputs for the noOfVehicles maxSpeed maxCarriableWeight
-		try (Scanner scanner = new Scanner(System.in)) {
-			System.out.println("Enter\nNo of Vechicles    maxSpeed   MaxCarriableWeight");
-			String[] inputline = scanner.nextLine().split(" ");
-			if (inputline.length != 3) {
-				System.out.println("Please enter the correct details");
-			} else {
-				noOfVehicles = Integer.parseInt(inputline[0]);
-				maxSpeed = Integer.parseInt(inputline[1]);
-				maxCarriableWeight = Integer.parseInt(inputline[2]);
-				new DeliveryTimeEstimation(noOfVehicles, maxSpeed, maxCarriableWeight);
+			delTimeEst = new DeliveryTimeEstimation(baseDeliveryCost, noOfPackages);
+
+			// Taking inputs for the noOfVehicles maxSpeed maxCarriableWeight
+			try (Scanner scanner = new Scanner(System.in)) {
+				System.out.println("Enter\nNo of Vechicles    maxSpeed   MaxCarriableWeight");
+				String[] inputline = scanner.nextLine().split(" ");
+				if (inputline.length != 3) {
+					System.out.println("Please enter the correct details");
+				} else {
+					noOfVehicles = Integer.parseInt(inputline[0]);
+					maxSpeed = Integer.parseInt(inputline[1]);
+					maxCarriableWeight = Integer.parseInt(inputline[2]);
+
+				}
+			} catch (NumberFormatException e) {
+
+				e.printStackTrace();
 			}
-		} catch (NumberFormatException e) {
 
-			e.printStackTrace();
-		}
+			// check validations for Vechicle fields
+			boolean flag = delTimeEst.checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicles, maxSpeed,
+					maxCarriableWeight);
+			if (!flag) {
+				System.out.println("Please enter positive details...!\n");
+			}
 
-		// calculations
-		List<String> result = delTimeEst.calculateDeliveryTime(baseDeliveryCost, inputPackages, noOfVehicles, maxSpeed,
-				maxCarriableWeight);
+			else {
+				new DeliveryTimeEstimation(noOfVehicles, maxSpeed, maxCarriableWeight);
+				// calculations
+				List<String> result = delTimeEst.calculateDeliveryTime(baseDeliveryCost, inputPackages, noOfVehicles,
+						maxSpeed, maxCarriableWeight);
 
-		// display results
-		System.out.println("\nFinal resultPackages:\n ");
-		for (String res : result) {
-			System.out.println(res);
+				// display results
+				System.out.println("\nFinal resultPackages:\n ");
+				for (String res : result) {
+					System.out.println(res);
+				}
+
+			}
 		}
 
 	}

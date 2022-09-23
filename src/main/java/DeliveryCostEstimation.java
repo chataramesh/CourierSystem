@@ -1,10 +1,8 @@
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import com.example.demo.Discount;
 
 class DeliveryCostEstimation extends DeliveryCostCalculations {
 
@@ -16,7 +14,7 @@ class DeliveryCostEstimation extends DeliveryCostCalculations {
 		super();
 	}
 
-	public static List<String> calculateDeliveryCost(List<Packages> inputPackages, int baseDeliveryCost,
+	public  List<String> calculateDeliveryCost(List<Packages> inputPackages, int baseDeliveryCost,
 			int noOfPackages) {
 
 		List<Packages> resultPackage = new ArrayList<Packages>();
@@ -57,23 +55,35 @@ class DeliveryCostEstimation extends DeliveryCostCalculations {
 
 	}
 
+	public boolean checkValidationForBaseDeliveryCostAndPackageCount(int baseDelCost, int packageCount) {
+		Validations validations = new Validations();
+		return validations.checkValidationForBaseDeliveryCostAndPackageCount(baseDelCost, packageCount);
+
+	}
+
 	public static void main(String[] args) {
 		int baseDeliveryCost, noOfPackages;
-
+		DeliveryCostEstimation deliveryCostEstimation = new DeliveryCostEstimation();
 		InputOutputDetails inputOutputDetails = new InputOutputDetails();
 
 		// Take the inputs from CLI
 		List<Packages> inputPackages = inputOutputDetails.getInputDetails();
 		baseDeliveryCost = inputOutputDetails.baseDeliveryCost;
 		noOfPackages = inputOutputDetails.noOfPackages;
+		boolean validationFlag = deliveryCostEstimation
+				.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost, noOfPackages);
+		if (validationFlag) {
+			// calculateDeliveryCost
 
-		// calculateDeliveryCost
-
-		System.out.println("\n Output\n");
-		List<String> result = calculateDeliveryCost(inputPackages, baseDeliveryCost, noOfPackages);
-		for (String res : result) {
-			System.out.println(res);
+			System.out.println("\n Output\n");
+			List<String> result =deliveryCostEstimation.calculateDeliveryCost(inputPackages, baseDeliveryCost, noOfPackages);
+			for (String res : result) {
+				System.out.println(res);
+			}
+		} else {
+			System.out.println("Invalid Details ....!");
 		}
+
 	}
 
 }

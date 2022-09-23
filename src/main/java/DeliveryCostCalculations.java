@@ -1,7 +1,6 @@
 
 import java.util.ArrayList;
 import java.util.List;
-import com.example.demo.Discount;
 
 public class DeliveryCostCalculations {
 
