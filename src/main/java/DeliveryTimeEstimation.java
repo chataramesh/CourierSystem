@@ -9,24 +9,15 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
-public class DeliveryTimeEstimation extends DeliveryCostCalculations {
-
+public class DeliveryTimeEstimation {
+	private final DeliveryCostCalculations deliveryCostCalc;
 	public static List<Packages> trackPackages = new ArrayList<Packages>();
 	public static List<Packages> resultPackages = new ArrayList<Packages>();
-	public static int noOfVehicles = 0, maxSpeed = 0, maxCarriableWeight = 0;
-	static Map<String, Double> vechicleTrack = new HashMap<String, Double>();
+	public static Map<String, Double> vechicleTrack = new HashMap<String, Double>();
 
 	public DeliveryTimeEstimation() {
-	}
+		deliveryCostCalc = new DeliveryCostCalculations();
 
-	public DeliveryTimeEstimation(int noOfVehicles, int maxSpeed, int maxCarriableWeight) {
-		this.maxCarriableWeight = maxCarriableWeight;
-		this.maxSpeed = maxSpeed;
-		this.noOfVehicles = noOfVehicles;
-	}
-
-	public DeliveryTimeEstimation(int baseDeliveryCost, int noOfPackages) {
-		super(baseDeliveryCost, noOfPackages);
 	}
 
 	public List<Packages> sortPackagesByWeight(List<Packages> inputList) {
@@ -91,15 +82,14 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 		return vcname;
 	}
 
-	private void calculateVechicleTimeAndPackageCost(int baseDeliveryCost, List<Packages> packageList) {
-		DeliveryCostCalculations deliveryCostCalculations = new DeliveryCostCalculations();
+	private void calculateVechicleTimeAndPackageCost(int baseDeliveryCost, int maxSpeed, List<Packages> packageList) {
 		String minTimeVechicleName = getVechicelMinimumTime(vechicleTrack);
 		double vechicle_sum = 0, max = 0, cur_oldTime = 0;
 		for (Packages pack : packageList) {
 			vechicleTrack = new TreeMap<String, Double>(vechicleTrack);
 			vechicle_sum = 0;
 			max = 0;
-			Packages st = deliveryCostCalculations.getDeliveryCostByPackage(baseDeliveryCost, pack);
+			Packages st = deliveryCostCalc.getDeliveryCostByPackage(baseDeliveryCost, pack);
 			resultPackages.add(st);
 			vechicle_sum = getPackageDeliveryTime(pack, maxSpeed);
 			if (max < vechicle_sum)
@@ -147,37 +137,52 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 
 	public List<String> calculateDeliveryTime(int baseDeliveryCost, List<Packages> inputPackages, int noOfVehicles,
 			int maxSpeed, int maxCarriableWeight) {
+
 		DeliveryTimeEstimation delTimeEst = new DeliveryTimeEstimation();
-		String vechileName;
 
-		new DeliveryTimeEstimation(noOfVehicles, maxSpeed, maxCarriableWeight);
-		// vehicle initialization with parameters for vehicle time tracking
+		boolean validationFlag = delTimeEst.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost,
+				inputPackages.size());
+		if (validationFlag) {
+			String vechileName;
+			boolean flag = checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicles, maxSpeed, maxCarriableWeight);
+			if (flag) {
+				// vehicle initialization with parameters for vehicle time tracking
+				for (int i = 0; i < noOfVehicles; i++) {
 
-		for (int i = 0; i < noOfVehicles; i++) {
+					vechileName = "vc" + String.valueOf(i + 1);
+					vechicleTrack.put(vechileName, (double) (0));
+				}
 
-			vechileName = "vc" + String.valueOf(i + 1);
-			vechicleTrack.put(vechileName, (double) (0));
-		}
+				List<Packages> sortedPackagesByWeightList = delTimeEst.sortPackagesByWeight(inputPackages);
 
-		List<Packages> sortedPackagesByWeightList = delTimeEst.sortPackagesByWeight(inputPackages);
+				for (int i = 0; i < sortedPackagesByWeightList.size(); i++) {
+					trackPackages.add(sortedPackagesByWeightList.get(i));
+				}
 
-		for (int i = 0; i < sortedPackagesByWeightList.size(); i++) {
-			trackPackages.add(sortedPackagesByWeightList.get(i));
-		}
-		while (trackPackages.size() > 0) {
-			List<Packages> maxWeighPackages = findMaxWeightPackages(trackPackages, maxCarriableWeight);
+				// finding the maximum weight packages
+				while (trackPackages.size() > 0) {
+					List<Packages> maxWeighPackages = findMaxWeightPackages(trackPackages, maxCarriableWeight);
 
-			for (Packages pck : maxWeighPackages) {
-				trackPackages.remove(pck);
+					for (Packages pck : maxWeighPackages) {
+						trackPackages.remove(pck);
+					}
+					calculateVechicleTimeAndPackageCost(baseDeliveryCost, maxSpeed, maxWeighPackages);
+				}
+
+				return buildOutput(resultPackages);
+			} else {
+				System.out.println("INVALID VECHICLES DETAILS....");
+				return null;
 			}
-			calculateVechicleTimeAndPackageCost(baseDeliveryCost, maxWeighPackages);
-		}
 
-		return displayResults(resultPackages);
+		} else {
+			System.out.println("INVALID BASSEDELIVERY ,NOOF PACKAGES DETAILS....");
+			return null;
+		}
 
 	}
 
-	List<String> displayResults(List<Packages> resultPackage) {
+	public List<String> buildOutput(List<Packages> resultPackage) {
 		List<String> resultPack = new ArrayList<String>();
 
 		if (resultPackage.size() > 0) {
@@ -207,8 +212,7 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 
 	}
 
-	public boolean checkValidationForVechicleAndSpeedAndMaxweight(int noOfVehicle, int maxSpd,
-			int maxCarriableWt) {
+	public boolean checkValidationForVechicleAndSpeedAndMaxweight(int noOfVehicle, int maxSpd, int maxCarriableWt) {
 		Validations validations = new Validations();
 		return validations.checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicle, maxSpd, maxCarriableWt);
 	}
@@ -219,9 +223,17 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 
 	}
 
+	public void displayResults(List<String> result) {
+		System.out.println("\nFinal Output:\n ");
+		for (String res : result) {
+			System.out.println(res);
+		}
+	}
+
 	public static void main(String[] args) {
-		int baseDeliveryCost, noOfPackages;
-		
+		int baseDeliveryCost = 0, noOfPackages = 0;
+		int noOfVehicles = 0, maxCarriableWeight = 0, maxSpeed = 0;
+
 		DeliveryTimeEstimation delTimeEst = new DeliveryTimeEstimation();
 
 		// taking the inputs
@@ -234,8 +246,6 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 		if (!validationFlag) {
 			System.out.println("Invalid DeliveryCost,noof packages details     .. Enter valid details....!");
 		} else {
-
-			delTimeEst = new DeliveryTimeEstimation(baseDeliveryCost, noOfPackages);
 
 			// Taking inputs for the noOfVehicles maxSpeed maxCarriableWeight
 			try (Scanner scanner = new Scanner(System.in)) {
@@ -250,8 +260,6 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 
 				}
 			} catch (NumberFormatException e) {
-
-				e.printStackTrace();
 			}
 
 			// check validations for Vechicle fields
@@ -262,16 +270,12 @@ public class DeliveryTimeEstimation extends DeliveryCostCalculations {
 			}
 
 			else {
-				new DeliveryTimeEstimation(noOfVehicles, maxSpeed, maxCarriableWeight);
 				// calculations
 				List<String> result = delTimeEst.calculateDeliveryTime(baseDeliveryCost, inputPackages, noOfVehicles,
 						maxSpeed, maxCarriableWeight);
 
 				// display results
-				System.out.println("\nFinal resultPackages:\n ");
-				for (String res : result) {
-					System.out.println(res);
-				}
+				delTimeEst.displayResults(result);
 
 			}
 		}

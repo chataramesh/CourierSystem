@@ -3,17 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeliveryCostCalculations {
-
-	public int baseDeliveryCost, noOfPackages;
-
-	public DeliveryCostCalculations(int baseDeliveryCost, int noOfPack) {
-		this.baseDeliveryCost = baseDeliveryCost;
-		this.noOfPackages = noOfPack;
-
-	}
-
+	private final Discount discount;
 	public DeliveryCostCalculations() {
-
+		discount = new Discount();
 	}
 
 	public Packages calculateDeliveryCost(int baseDeliveryCost, int discountPercentage, Packages pack) {
@@ -39,12 +31,16 @@ public class DeliveryCostCalculations {
 		int discountPercentage = 0;
 		int packageWeight, distance;
 		String discountOfferCode;
-		Discount discount = new Discount();
-		packageWeight = packages.getPackageWeight();
-		distance = packages.getDistance();
-		discountOfferCode = packages.getOfferCode();
-		discountPercentage = discount.getDiscountPercentage(packageWeight, distance, discountOfferCode);
-		return calculateDeliveryCost(baseDeliveryCost, discountPercentage, packages);
+		try {
+			packageWeight = packages.getPackageWeight();
+			distance = packages.getDistance();
+			discountOfferCode = packages.getOfferCode();
+			discountPercentage = discount.getDiscountPercentage(packageWeight, distance, discountOfferCode);
+			return calculateDeliveryCost(baseDeliveryCost, discountPercentage, packages);
+		} catch (Exception e) {
+
+		}
+		return null;
 	}
 
 }

@@ -4,37 +4,41 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-class DeliveryCostEstimation extends DeliveryCostCalculations {
+class DeliveryCostEstimation {
 
-	public DeliveryCostEstimation(int baseDeliveryCost, int noOfPack) {
-		super(baseDeliveryCost, noOfPack);
-	}
+	private final DeliveryCostCalculations deliveryCostCalc;
+	public static List<Packages> resultPackage = new ArrayList<Packages>();
 
 	public DeliveryCostEstimation() {
-		super();
+		deliveryCostCalc = new DeliveryCostCalculations();
+
 	}
 
-	public  List<String> calculateDeliveryCost(List<Packages> inputPackages, int baseDeliveryCost,
-			int noOfPackages) {
+	public List<String> calculateDeliveryCost(List<Packages> inputPackages, int baseDeliveryCost, int noOfPackages) {
+		DeliveryCostEstimation delcostEst = new DeliveryCostEstimation();
 
-		List<Packages> resultPackage = new ArrayList<Packages>();
-		DeliveryCostEstimation delcostEst = new DeliveryCostEstimation(baseDeliveryCost, noOfPackages);
+		boolean validationFlag = delcostEst.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost,
+				noOfPackages);
+		if (validationFlag) {
+			for (int i = 0; i < inputPackages.size(); i++) {
+				if (inputPackages.get(i) != null)
+					resultPackage
+							.add(deliveryCostCalc.getDeliveryCostByPackage(baseDeliveryCost, inputPackages.get(i)));
+			}
+			return delcostEst.buildOuput(resultPackage);
 
-		for (int i = 0; i < inputPackages.size(); i++) {
-			resultPackage.add(delcostEst.getDeliveryCostByPackage(baseDeliveryCost, inputPackages.get(i)));
+		} else {
+			System.out.println("INVALID BASEDELIVERY COST OR NO OF PACKAGES DETAILS....");
+			return null;
 		}
 
-		// display the results
-		return displayResults(resultPackage);
 	}
 
-	public static List<String> displayResults(List<Packages> resultPackage) {
+	public List<String> buildOuput(List<Packages> resultPackage) {
 
 		List<String> resultList = new ArrayList<String>();
-
 		if (resultPackage.size() > 0) {
 			List<Packages> result = resultPackage;
-
 			// sort the packages
 			Collections.sort(result, new Comparator<Packages>() {
 
@@ -42,22 +46,27 @@ class DeliveryCostEstimation extends DeliveryCostCalculations {
 					return o1.getPackageId().compareTo(o2.getPackageId());
 				}
 			});
-
 			for (int i = 0; i < resultPackage.size(); i++) {
 				String str = "";
 				str += resultPackage.get(i).getPackageId() + "      " + resultPackage.get(i).getDisocuntAmount()
 						+ "      " + resultPackage.get(i).getDeliveryPrce();
 				resultList.add(str);
-
 			}
 		}
 		return resultList;
 
 	}
 
-	public boolean checkValidationForBaseDeliveryCostAndPackageCount(int baseDelCost, int packageCount) {
+	boolean checkValidationForBaseDeliveryCostAndPackageCount(int baseDelCost, int packageCount) {
 		Validations validations = new Validations();
 		return validations.checkValidationForBaseDeliveryCostAndPackageCount(baseDelCost, packageCount);
+
+	}
+
+	public void displayResults(List<String> resultPacks) {
+		for (String st : resultPacks) {
+			System.out.println(st);
+		}
 
 	}
 
@@ -74,16 +83,15 @@ class DeliveryCostEstimation extends DeliveryCostCalculations {
 				.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost, noOfPackages);
 		if (validationFlag) {
 			// calculateDeliveryCost
-
 			System.out.println("\n Output\n");
-			List<String> result =deliveryCostEstimation.calculateDeliveryCost(inputPackages, baseDeliveryCost, noOfPackages);
-			for (String res : result) {
-				System.out.println(res);
-			}
+			List<String> resultPacks = deliveryCostEstimation.calculateDeliveryCost(inputPackages, baseDeliveryCost,
+					noOfPackages);
+
+			// display results
+			deliveryCostEstimation.displayResults(resultPacks);
 		} else {
 			System.out.println("Invalid Details ....!");
 		}
 
 	}
-
 }

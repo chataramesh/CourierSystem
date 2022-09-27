@@ -7,26 +7,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 class DeliveryTimeEstimationTest {
-	int baseDeliveryCost = 100, inputPackageCount = 5;
-	int noOfVehicles = 2, maxSpeed = 70, maxCarriableWeight = 200;
 	DeliveryTimeEstimation delTimeEst = new DeliveryTimeEstimation();
-
-	// check for the negative input values of noOfVehicles,
-	// maxSpeed,maxCarriableWeight
-	@Test
-	void validationForVechicleAndSpeedAndMaxweightTest() {
-		System.out.println("\nInput Validation For noOfVehicles maxSpeed,maxCarriableWeight\n");
-		boolean expectedFalg = true;
-		boolean resultFlag = delTimeEst.checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicles, maxSpeed,
-				maxCarriableWeight);
-		assertEquals(expectedFalg, resultFlag);
-		System.out.println("         Test success...!\n");
-	}
 
 	// check for the negative input values of baseDeliveryCost, inputPackageCount
 	@Test
 	void validationForBaseDeliveryCostAndPackageCountTest() {
-		System.out.println("\nInput Validation For baseDeliveryCost, inputPackageCount\n");
+		int baseDeliveryCost = 100, inputPackageCount = 5;
+
+		System.out.println("\nValidation For baseDeliveryCost, inputPackageCount\n");
 		boolean expectedFalg = true;
 		boolean resultFlag = delTimeEst.checkValidationForBaseDeliveryCostAndPackageCount(baseDeliveryCost,
 				inputPackageCount);
@@ -34,10 +22,27 @@ class DeliveryTimeEstimationTest {
 		System.out.println("         Test success...!\n");
 	}
 
-	/// Check the application flow
+	// check for the negative input values of noOfVehicles,
+	// maxSpeed,maxCarriableWeight
+	@Test
+	void validationForVechicleAndSpeedAndMaxweightTest() {
+		int noOfVehicles = 2, maxSpeed = 70, maxCarriableWeight = 200;
+
+		System.out.println("\nValidation For noOfVehicles maxSpeed,maxCarriableWeight\n");
+		boolean expectedFalg = true;
+		boolean resultFlag = delTimeEst.checkValidationForVechicleAndSpeedAndMaxweight(noOfVehicles, maxSpeed,
+				maxCarriableWeight);
+		assertEquals(expectedFalg, resultFlag);
+		System.out.println("         Test success...!\n");
+	}
+
+	// Check the application flow
 	@Test
 	void deliveryTimeEstimationTest() {
-		System.out.println("\nFunctional Flow \n");
+		int baseDeliveryCost = 100;
+		int noOfVehicles = 2, maxSpeed = 70, maxCarriableWeight = 200;
+
+		System.out.println("\nValidation For Functional Flow");
 
 		List<Packages> inputPackages = new ArrayList<Packages>();
 
@@ -56,13 +61,8 @@ class DeliveryTimeEstimationTest {
 
 		List<String> resultSet = delTimeEst.calculateDeliveryTime(baseDeliveryCost, inputPackages, noOfVehicles,
 				maxSpeed, maxCarriableWeight);
-		System.out.println("	Expected Ouput\n");
-		for (String s : resultSet) {
-			System.out.println("	" + s);
-		}
 		assertEquals(expectedResult, resultSet);
-
-		System.out.println("\n	Test success...!");
+		System.out.println("         Test success...!");
 		System.out.println("\n");
 
 	}

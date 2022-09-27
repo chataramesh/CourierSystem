@@ -2,7 +2,7 @@
 1.Download the assignment and extract it
 
 2.Open CMD and go to project path
-	your local path\CourierServiceSystem
+	your local path\CourierServiceSystem\CourierServiceSystem
 
 TESTING
 3. Run the below command for test
@@ -18,7 +18,7 @@ TESTING
 
 RUN THE INVIDIDUAL FILES
 4.Open CMD and go to project path
-	your local path\CourierServiceSystem\src\main\java
+	your local path\CourierServiceSystem\CourierServiceSystem\src\main\java
 	Then run the below command for 1st question
 		1.javac DeliveryCostEstimation.java
 		
@@ -48,7 +48,8 @@ RUN THE INVIDIDUAL FILES
 				
 				noOfVechiles   maxSpeed  maxWeight
 				2 70 200
-		
+Note:If you want to update the offer codes please update in OfferCodes.csv file and placed in below path
+/CourierServiceSystem/CourierServiceSystem/src/main/java/OfferCodes.csv
 	
 	
 	
